@@ -5,9 +5,9 @@ const refs = {
   textarea: document.querySelector('.feedback-form textarea'),
 };
 
-console.log(refs.form);
-console.log(refs.email);
-console.log(refs.textarea);
+// console.log(refs.form);
+// console.log(refs.email);
+// console.log(refs.textarea);
 
 // const formData = {};
 
@@ -24,8 +24,9 @@ const savedData = localStorage.getItem('feedback-form-state');
 
 // ================================
 populateInput();
+// populateInput();
 
-const formData = {};
+let formData = {};
 
 // console.log(refs.textarea.value);
 
@@ -39,9 +40,14 @@ function onFormDataInput(event) {
   // 1. Читаем сторедж
 
   const savedData = localStorage.getItem('feedback-form-state');
+  // console.log(savedData);
 
-  console.log(event.target.name);
-  console.log(event.target.value);
+  // console.log(event.target.name);
+  // console.log(event.target.value);
+
+  // refs.email.value = savedText.email || '';
+
+  // refs.textarea.value = savedText.message || '';
   // console.log(savedData);
   //   const savedText = JSON.parse(savedData);
 
@@ -72,12 +78,21 @@ function onFormDataInput(event) {
 
 function populateInput() {
   const savedData = localStorage.getItem('feedback-form-state');
-  const savedText = JSON.parse(savedData);
-  // console.log(savedData);
+  console.log(savedData);
+
+  let formData = {};
+
+  try {
+    formData = JSON.parse(savedData);
+  } catch (error) {
+    console.log('Ошибка парсинга:', error);
+  }
 
   if (savedData) {
-    refs.email.value = savedText.email || '';
+    refs.email.value = formData.email || '';
 
-    refs.textarea.value = savedText.message || '';
+    refs.textarea.value = formData.message || '';
   }
+
+  return formData;
 }
