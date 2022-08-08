@@ -1,98 +1,68 @@
 // ================================
+import throttle from 'lodash.throttle';
+
 const refs = {
   form: document.querySelector('.feedback-form'),
   email: document.querySelector('.feedback-form input'),
   textarea: document.querySelector('.feedback-form textarea'),
 };
 
-// console.log(refs.form);
-// console.log(refs.email);
-// console.log(refs.textarea);
-
-// const formData = {};
+const DATA_FORM_KEY = 'feedback-form-state';
 
 // Ставим слушатели
-refs.form.addEventListener('input', onFormDataInput);
+refs.form.addEventListener('input', throttle(onCreateFormDataInput, 500));
 refs.form.addEventListener('submit', onFormSubmit);
-// refs.textarea.addEventListener('input', onTextAreaInput);
-// refs.email.addEventListener('input', onTextAreaInput);
-
-//При загрузке страницы проверяй состояние хранилища,
-// и если там есть сохраненные данные, заполняй ими поля формы.
-// В противном случае поля должны быть пустыми.
-const savedData = localStorage.getItem('feedback-form-state');
 
 // ================================
-populateInput();
-// populateInput();
-
 let formData = {};
-
-// console.log(refs.textarea.value);
+readFormData();
 
 function onFormSubmit(event) {
+  // Запрещаем перезагрузку
   event.preventDefault();
 
-  // console.log(event);
+  // Если поля не заполнены, выводим сообщение
+  if (refs.email.value === '' || refs.textarea.value === '') {
+    return alert('Все поля должны быть заполнены :)');
+  }
+  // Отправляем форму и очищаем поля
+  event.currentTarget.reset();
+
+  // Выводим данные в консоль
+  console.log(formData);
+
+  // Очищаем хранилище
+  localStorage.removeItem(DATA_FORM_KEY);
 }
 
-function onFormDataInput(event) {
-  // 1. Читаем сторедж
-
-  const savedData = localStorage.getItem('feedback-form-state');
-  // console.log(savedData);
-
-  // console.log(event.target.name);
-  // console.log(event.target.value);
-
-  // refs.email.value = savedText.email || '';
-
-  // refs.textarea.value = savedText.message || '';
-  // console.log(savedData);
-  //   const savedText = JSON.parse(savedData);
-
-  //   if (savedData) {
-  //     const savedText = JSON.parse(savedData);
-  //     refs.email.value = savedText.email;
-
-  //     refs.textarea.value = savedText.message;
-  //   }
-  // 2. Преобразуем в обьект з JSON
-
-  // 2. Преобразуем в массим з JSON
-  // 3. Пушим в массив новые данные
-  // 4. Конвертируем новый массив в JSON
-  // 5. Записываем новый JSON в сторедж
-
-  // Добавляем в обьект formData данные с инпутов,
-  // name - ключ, value - значение.
+function onCreateFormDataInput(event) {
+  // Записываем данные в обьект formData
   formData[event.target.name] = event.target.value;
 
   // Преобразуем обьект в строку и сохраняем его в локальное хранилище
   const savedInput = JSON.stringify(formData);
-  // console.log(savedInput);
-  // console.log(formData);
-
-  localStorage.setItem('feedback-form-state', savedInput);
+  localStorage.setItem(DATA_FORM_KEY, savedInput);
 }
 
-function populateInput() {
-  const savedData = localStorage.getItem('feedback-form-state');
-  console.log(savedData);
+function readFormData() {
+  // По переменой savedData будем проверять есть ли что то в локальном хранилище
+  const savedData = localStorage.getItem(DATA_FORM_KEY);
 
-  let formData = {};
-
-  try {
-    formData = JSON.parse(savedData);
-  } catch (error) {
-    console.log('Ошибка парсинга:', error);
-  }
-
+  // Eсли в хранилище есть данные, парсим оттуда строку в обьект,
+  // и будут присвоены значения,
+  // если там пусто значения будут пустой строкой
   if (savedData) {
-    refs.email.value = formData.email || '';
+    let savedFormData = {};
 
-    refs.textarea.value = formData.message || '';
+    try {
+      savedFormData = JSON.parse(savedData);
+    } catch (error) {
+      console.log('Ошибка парсинга:', error);
+    }
+    formData.email = savedFormData.email || '';
+    formData.message = savedFormData.message || '';
+
+    refs.email.value = savedFormData.email || '';
+    refs.textarea.value = savedFormData.message || '';
   }
-
-  return formData;
 }
