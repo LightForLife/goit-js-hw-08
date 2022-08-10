@@ -1,4 +1,4 @@
-// ================================
+================================
 import throttle from 'lodash.throttle';
 
 const refs = {
@@ -30,6 +30,9 @@ function onFormSubmit(event) {
 
   // Выводим данные в консоль
   console.log(formData);
+
+  // Очищаем formData
+  formData = {};
 
   // Очищаем хранилище
   localStorage.removeItem(DATA_FORM_KEY);
@@ -66,3 +69,28 @@ function readFormData() {
     refs.textarea.value = savedFormData.message || '';
   }
 }
+
+// ======================== Var 2 ======================== //
+
+// const refs = {
+//   form: document.querySelector('.feedback-form'),
+//   email: document.querySelector('.feedback-form input'),
+//   textarea: document.querySelector('.feedback-form textarea'),
+// };
+
+// console.log(refs.form);
+
+// const DATA_FORM_KEY = 'feedback-form-state';
+
+// // Ставим слушатели
+// // refs.form.addEventListener('input', throttle(onCreateFormDataInput, 500));
+// refs.form.addEventListener('input', onCreateFormDataInput);
+// refs.form.addEventListener('submit', onFormSubmit);
+
+// // ================================
+// let formData = {};
+// // readFormData();
+
+// function onCreateFormDataInput(event) {
+//   console.log(event);
+// }
